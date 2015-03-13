@@ -144,7 +144,7 @@ def load_liwc_cats():
 
 
 def print_liwc_results(tst_file,base,word_count,num_responses):
-    print '/n',txt_file.name[ls.findnth(txt_file,'\\',txt_file.count('\\'))-3:txt_file.find('.')].upper(),'/n'
+    print '/n',txt_file.name[findnth(txt_file,'\\',txt_file.count('\\'))-3:txt_file.find('.')].upper(),'/n'
     print 'Base = %s'%(base)
     print 'Total word count = %s'%(word_count)
     print 'Total # responses = %s'%(num_responses)
@@ -153,13 +153,13 @@ def print_liwc_results(tst_file,base,word_count,num_responses):
 
 
 def print_sent_analysis(txt_file,overall,sentiments,pos_ratio,neg_ratio):
-    print "~~@@~~~@@@~~ %s SENTIMENT ANALYSIS RESULTS ~~@@~~~@@@~~\n"%(txt_file[ls.findnth(txt_file,'\\',txt_file.count('\\'))-3:txt_file.find('.')].upper())
+    print "~~@@~~~@@@~~ %s SENTIMENT ANALYSIS RESULTS ~~@@~~~@@@~~\n"%(txt_file[findnth(txt_file,'\\',txt_file.count('\\'))-3:txt_file.find('.')].upper())
     print "Overall sentiment score: %s"%(str(overall))
     print "Total number of responses: %s\n"%(len(sentiments.keys()))
     print "Ratio of positive comments: %s" %("{:.2%}".format(pos_ratio))
     print "Ratio of negative comments: %s" %("{:.2%}".format(neg_ratio))
     
-    ls.unpack_dictionary(sentiments)
+    unpack_dictionary(sentiments)
     print '\n'
 
 

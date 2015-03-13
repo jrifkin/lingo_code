@@ -8,13 +8,11 @@ import lingo_support as ls
 def liwc_analysis(data,liwc_dict,temp,name='File1'):
 
     liwc_counter = {k:0 for k in liwc_dict.keys()}
-    data = ls.split_response(txt_file)
-
+    
     #make list of liwc_words and sort alphabetically
     liwc_words = liwc_dict.keys()
     liwc_words.sort(key=lambda x: re.sub('[^A-Za-z]+', '', x).lower())
 
-    """binary search still does not work, implemented andy's method of sorting both search and lookup lists and caching where it left off"""
     counts,base,word_count,num_responses = ls.count_matches(data,liwc_words,liwc_counter)    
     
     overall_cats = ls.category_counts(liwc_dict,counts)
@@ -87,7 +85,7 @@ def run_analysis(txt_file):
     liwc_dict = ls.load_liwc_cats()
     sent_file = ls.load_LabMT()
     
-    tmep = sentiment_score(data,sent_file,response_dict,txt_file)
+    temp = sentiment_score(data,sent_file,response_dict,txt_file)
     final = liwc_analysis(data,liwc_dict,temp,txt_file)
 
     #output final dictionary as CSV
