@@ -122,13 +122,13 @@ def load_liwc_cats():
     """ *** may have trouble with odd characters such as accent e, for now encoded in unicode and translate to py string"""
     import xlrd as xl
     #xlrd is 0 based in terms of cell referencing
-    
+    bPosEmo = False
     liwc_path = r"C:\_github\lingo_code\lingo_code\lingo_code\LIWC2007dictionary poster.xls"
     liwc = xl.open_workbook(liwc_path)
     ws = liwc.sheet_by_name("Official genome")
     num_rows = ws.nrows -1
     cat_dict = {}
-
+    
     for j in range(0,64):
         my_lst=[]
         for i in range(3,num_rows):
@@ -163,10 +163,11 @@ def print_sent_analysis(txt_file,overall,sentiments,pos_ratio,neg_ratio):
     print '\n'
 
 
-def validate_dir():
+def validate_dir(args):
+    import os
     bValid = False
     try:
-        rootdir = sys.argv[1]
+        rootdir = args[1]
     except:
         print 'Please specify a valid directory that contains at least 1 .txt file'
         return -1,bValid
@@ -179,3 +180,14 @@ def validate_dir():
         print 'No .txt files in the specified directory'
 
     return rootdir,bValid   
+
+def setup_responses(txt_file,id_col=-1):
+    
+    my_dict = {}
+    if id_col == -1:
+        #assumes there are no ids and will create, in the future, will have to acommodate pre-existing ids
+        print 'placeholder'
+    
+    my_dict = {i:[] for i,line in enumerate(txt_file)}
+
+    return my_dict

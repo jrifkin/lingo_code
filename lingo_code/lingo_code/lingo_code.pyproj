@@ -13,7 +13,7 @@
     <Name>lingo_code</Name>
     <RootNamespace>lingo_code</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>"C:\_github\lingo_code\lingo_code\lingo_code\Testing"</CommandLineArguments>
+    <CommandLineArguments>"C:\_github\lingo_code\lingo_code\lingo_code\Pulse OEs"</CommandLineArguments>
     <InterpreterPath />
     <InterpreterArguments />
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>

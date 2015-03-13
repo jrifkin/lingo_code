@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys,os, re
+import sys,os
 import lingo_support as ls
 
 """goal is to create binary variables with which we can run correlation analysis on"""
@@ -22,31 +22,28 @@ def liwc_analysis(txt_file,liwc_dict):
     ls.print_liwc_results(txt_file,base,word_count,num_responses)
 
 
-def sentiment_score(txt_file,sent_file,pos_threshold = 0,min_base = 0):
-    scores = sent_file
-    
-    data = ls.split_response(txt_file)
-       
+def sentiment_score(data,sent_file,response_dict,name = 'File1',threshold = 0):
+    """goal of this function is to create a varaible for positivity returned in the response_dict"""
+  
     sentiments = {}
     
     for i,response in enumerate(data):
         sentiment = 0       
         for word in response:
-            if scores.has_key(word.lower()):
-                sentiment+=int(scores[word.lower()])
+            if sent_file.has_key(word.lower()):
+                sentiment+=int(sent_file[word.lower()])
         sentiments[i] = [sentiment,response]
 
     overall = 0
     for score in sentiments.keys():
         overall += sentiments[score][0]
 
-
     pos=0
     neg=0
     for key in sentiments.keys():
-        if sentiments[key][0]>0:
+        if sentiments[key][0]>threshold:
             pos+=1
-        elif sentiments[key][0]<0:
+        elif sentiments[key][0]<-(threshold):
             neg+=1
 
     pos_ratio = pos/float(len(sentiments.keys()))
@@ -58,24 +55,31 @@ def sentiment_score(txt_file,sent_file,pos_threshold = 0,min_base = 0):
 def main():
     """pass it a directory and it will loop through all .txt. files and run the sntiment_score and common_word_analysis methods"""    
     
-    rootdir,b_val = ls.validate_dir()
+    rootdir,b_val = ls.validate_dir(sys.argv)
 
     if not(b_val):
         return
 
-    liwc_dict = ls.load_liwc_cats()
-    sent_file = ls.load_LabMT()
-    
     for subdir,dirs,files in os.walk(rootdir):
         for file in files:
             if file[file.find('.'):] == '.txt':
                 txt_file = open(os.path.join(rootdir,file),'r')
-                sentiment_score(txt_file,sent_file)
                 
-                txt_file.close()
-                txt_file = open(os.path.join(rootdir,file),'r')
+                run_analysis(txt_file)
 
-                liwc_analysis(txt_file,liwc_dict)
+
+def run_analysis(txt_file):
+    
+    response_dict = ls.setup_responses(txt_file)
+
+    data = ls.split_response(txt_file)
+    liwc_dict = ls.load_liwc_cats()
+    sent_file = ls.load_LabMT()
+    
+    tmep = sentiment_score(data,sent_file,response_dict,txt_file.name)
+    final = liwc_analysis(data,liwc_dict,temp,txt_file.name)
+
+    #output final dictionary as CSV
 
 
 if __name__ == '__main__':
