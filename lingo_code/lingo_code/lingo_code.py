@@ -5,7 +5,7 @@ import lingo_support as ls
 
 """goal is to create binary variables with which we can run correlation analysis on"""
 
-def liwc_analysis(txt_file,liwc_dict):
+def liwc_analysis(data,liwc_dict,temp,name='File1'):
 
     liwc_counter = {k:0 for k in liwc_dict.keys()}
     data = ls.split_response(txt_file)
@@ -31,9 +31,14 @@ def sentiment_score(data,sent_file,response_dict,name = 'File1',threshold = 0):
         sentiment = 0       
         for word in response:
             if sent_file.has_key(word.lower()):
-                sentiment+=int(sent_file[word.lower()])
+                sentiment+=float(sent_file[word.lower()])
         sentiments[i] = [sentiment,response]
-        response_dict[i] = response_dict[i].append(sentiment)
+        
+        #add to score as first var in response_dict
+        tmp_lst = response_dict[i]
+        tmp_lst.append(sentiment)
+        response_dict[i] = tmp_lst
+        
 
     #aggregate analysis
     overall = 0
@@ -51,7 +56,7 @@ def sentiment_score(data,sent_file,response_dict,name = 'File1',threshold = 0):
     pos_ratio = pos/float(len(sentiments.keys()))
     neg_ratio = neg/float(len(sentiments.keys()))
 
-    ls.print_sent_analysis(txt_file,overall,sentiments,pos_ratio,neg_ratio)
+    ls.print_sent_analysis(name,overall,sentiments,pos_ratio,neg_ratio)
 
     return response_dict
 

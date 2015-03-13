@@ -98,7 +98,7 @@ def split_response(txt_file):
                 words[i] = nu_word
             else:
                 nu_word = word
-                words[i] = clean_word(nu_word)
+            words[i] = clean_word(nu_word)
         data.append(words)
     print 'split responses'
     return data
@@ -144,7 +144,7 @@ def load_liwc_cats():
 
 
 def print_liwc_results(tst_file,base,word_count,num_responses):
-    print '/n',txt_file.name[ls.findnth(txt_file.name,'\\',txt_file.name.count('\\'))-3:txt_file.name.find('.')].upper(),'/n'
+    print '/n',txt_file.name[ls.findnth(txt_file,'\\',txt_file.count('\\'))-3:txt_file.find('.')].upper(),'/n'
     print 'Base = %s'%(base)
     print 'Total word count = %s'%(word_count)
     print 'Total # responses = %s'%(num_responses)
@@ -153,7 +153,7 @@ def print_liwc_results(tst_file,base,word_count,num_responses):
 
 
 def print_sent_analysis(txt_file,overall,sentiments,pos_ratio,neg_ratio):
-    print "~~@@~~~@@@~~ %s SENTIMENT ANALYSIS RESULTS ~~@@~~~@@@~~\n"%(txt_file.name[ls.findnth(txt_file.name,'\\',txt_file.name.count('\\'))-3:txt_file.name.find('.')].upper())
+    print "~~@@~~~@@@~~ %s SENTIMENT ANALYSIS RESULTS ~~@@~~~@@@~~\n"%(txt_file[ls.findnth(txt_file,'\\',txt_file.count('\\'))-3:txt_file.find('.')].upper())
     print "Overall sentiment score: %s"%(str(overall))
     print "Total number of responses: %s\n"%(len(sentiments.keys()))
     print "Ratio of positive comments: %s" %("{:.2%}".format(pos_ratio))
@@ -188,6 +188,6 @@ def setup_responses(txt_file,id_col=-1):
         #assumes there are no ids and will create, in the future, will have to acommodate pre-existing ids
         print 'placeholder'
     
-    my_dict = {i:[] for i,line in enumerate(txt_file)}
+    my_dict = {i:[i] for i,line in enumerate(txt_file)}
     txt_file.close()
     return my_dict
