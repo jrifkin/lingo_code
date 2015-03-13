@@ -88,7 +88,7 @@ def create_cat_dict(container):
 
 
 def split_response(txt_file):
-    
+    txt_file = open(txt_file,'r')
     data = []
     for line in txt_file:
         words = line.split(" ")
@@ -100,7 +100,7 @@ def split_response(txt_file):
                 nu_word = word
                 words[i] = clean_word(nu_word)
         data.append(words)
-    #print 'split responses'
+    print 'split responses'
     return data
 
 
@@ -182,12 +182,12 @@ def validate_dir(args):
     return rootdir,bValid   
 
 def setup_responses(txt_file,id_col=-1):
-    
+    txt_file = open(txt_file,'r')
     my_dict = {}
     if id_col == -1:
         #assumes there are no ids and will create, in the future, will have to acommodate pre-existing ids
         print 'placeholder'
     
     my_dict = {i:[] for i,line in enumerate(txt_file)}
-
+    txt_file.close()
     return my_dict

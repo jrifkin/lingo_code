@@ -33,7 +33,9 @@ def sentiment_score(data,sent_file,response_dict,name = 'File1',threshold = 0):
             if sent_file.has_key(word.lower()):
                 sentiment+=int(sent_file[word.lower()])
         sentiments[i] = [sentiment,response]
+        response_dict[i] = response_dict[i].append(sentiment)
 
+    #aggregate analysis
     overall = 0
     for score in sentiments.keys():
         overall += sentiments[score][0]
@@ -49,7 +51,11 @@ def sentiment_score(data,sent_file,response_dict,name = 'File1',threshold = 0):
     pos_ratio = pos/float(len(sentiments.keys()))
     neg_ratio = neg/float(len(sentiments.keys()))
 
-    ls.print_sent_analysis(txt_file,overall,sentiments,pos_ratio,neg_ratio) 
+    ls.print_sent_analysis(txt_file,overall,sentiments,pos_ratio,neg_ratio)
+
+    return response_dict
+
+
 
 
 def main():
@@ -63,7 +69,7 @@ def main():
     for subdir,dirs,files in os.walk(rootdir):
         for file in files:
             if file[file.find('.'):] == '.txt':
-                txt_file = open(os.path.join(rootdir,file),'r')
+                txt_file = os.path.join(rootdir,file)
                 
                 run_analysis(txt_file)
 
@@ -76,8 +82,8 @@ def run_analysis(txt_file):
     liwc_dict = ls.load_liwc_cats()
     sent_file = ls.load_LabMT()
     
-    tmep = sentiment_score(data,sent_file,response_dict,txt_file.name)
-    final = liwc_analysis(data,liwc_dict,temp,txt_file.name)
+    tmep = sentiment_score(data,sent_file,response_dict,txt_file)
+    final = liwc_analysis(data,liwc_dict,temp,txt_file)
 
     #output final dictionary as CSV
 
