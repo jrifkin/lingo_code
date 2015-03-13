@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>ad74d0ac-8706-4b59-b87a-0fc633dc4d19</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>lingo_code.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>lingo_code</Name>
+    <RootNamespace>lingo_code</RootNamespace>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <CommandLineArguments>"C:\_github\lingo_code\lingo_code\lingo_code\Testing"</CommandLineArguments>
+    <InterpreterPath />
+    <InterpreterArguments />
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <InterpreterId>{9b0efcde-c716-465e-b90d-0dde72b2dc6a}</InterpreterId>
+    <InterpreterVersion>2.7</InterpreterVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="lingo_code.py" />
+    <Compile Include="lingo_support.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Pulse OEs\" />
+    <Folder Include="Testing\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LIWC2007dictionary poster.xls" />
+    <Content Include="Pulse OEs\Anything_Else.txt" />
+    <Content Include="Pulse OEs\Big_Impact_Not_Seen.txt" />
+    <Content Include="Pulse OEs\Big_Impact_Seen.txt" />
+    <Content Include="Pulse OEs\Entrepreneurial_Mindset_Not_Seen.txt" />
+    <Content Include="Pulse OEs\Entrepreneurial_Mindset_Seen.txt" />
+    <Content Include="Pulse OEs\Opportunity_Culture_OE.txt" />
+    <Content Include="Pulse OEs\Pulse OEs.xlsm" />
+    <Content Include="Pulse OEs\Unlimited_Opportunity_Not_Seen.txt" />
+    <Content Include="Pulse OEs\Unlimited_Opportunity_Seen.txt" />
+    <Content Include="Testing\new  2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{9b0efcde-c716-465e-b90d-0dde72b2dc6a}\2.7" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+</Project>
