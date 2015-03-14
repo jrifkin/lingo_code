@@ -1,23 +1,46 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys,os
+import sys,os,re
 import lingo_support as ls
 
 """goal is to create binary variables with which we can run correlation analysis on"""
 
-def liwc_analysis(data,liwc_dict,temp,name='File1'):
+def liwc_analysis(data,liwc_dict,response_dict,name='File1'):
 
+    total_word_count = 0
+    total_base = 0
+
+    #liwc_counter = placeholder for how many times a word was mentioned
     liwc_counter = {k:0 for k in liwc_dict.keys()}
     
     #make list of liwc_words and sort alphabetically
     liwc_words = liwc_dict.keys()
     liwc_words.sort(key=lambda x: re.sub('[^A-Za-z]+', '', x).lower())
 
-    counts,base,word_count,num_responses = ls.count_matches(data,liwc_words,liwc_counter)    
+    #needs to happen on a response level instead of aggregate
+    for i,response in enumerate(data):
+        counts,base,word_count = ls.count_matches(response,liwc_words,liwc_counter)   
+        total_word_count+=word_count
+        total_base+=base 
+
+        #overall_cats holds the count of words per category
+        overall_cats = ls.category_counts(liwc_dict,counts)
+
+        for key in overall_cats.keys():
+            tmp_lst = response_dict[i]
+            tmp_lst.append(liwc_score(key,overall_cats,base))
+            response_dict[i] = tmp_lst
+            
+    return response_dict
     
-    overall_cats = ls.category_counts(liwc_dict,counts)
-    
-    ls.print_liwc_results(txt_file,base,word_count,num_responses)
+    ls.print_liwc_results(txt_file,total_base,total_word_count,len(data))
+
+
+def liwc_score(cat,overall_cats,base):
+    if base == 0:
+        return None
+    else:
+        return float(overall_cats[cat])/base
 
 
 def sentiment_score(data,sent_file,response_dict,name = 'File1',threshold = 0):
@@ -89,6 +112,7 @@ def run_analysis(txt_file):
     final = liwc_analysis(data,liwc_dict,temp,txt_file)
 
     #output final dictionary as CSV
+    ls.make_data(final)
 
 
 if __name__ == '__main__':

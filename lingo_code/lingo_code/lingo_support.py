@@ -39,29 +39,26 @@ def findnth(haystack, needle, n):
     #returns an integer that represents the start position the nth iteration of needle
 	return haystack.replace(needle,'XX',n-1).find(needle)
 
-def count_matches(input,inv,liwc_counter):
+def count_matches(response,inv,liwc_counter):
     n=0
     word_count = 0
-    responses = 0
+   
+    sorted_response = sorted(response)
+    start_index = 0
+    for word in sorted_response:
+        word_count += 1
+        if word in inv:
+            liwc_counter[word] += 1
+            n+=1
+        else:
+            for i in range(start_index,len(inv)):
+                if inv[i].find('*')>0 and (inv[i].replace('*','') in word and inv[i][1] == word[1]):
+                    liwc_counter[inv[i]]+=1
+                    start_index = i
+                    n+=1
+                    break
 
-    for response in input:
-        responses+=1
-        sorted_response = sorted(response)
-        start_index = 0
-        for word in sorted_response:
-            word_count += 1
-            if word in inv:
-                liwc_counter[word] += 1
-                n+=1
-            else:
-                for i in range(start_index,len(inv)):
-                    if inv[i].find('*')>0 and (inv[i].replace('*','') in word and inv[i][1] == word[1]):
-                        liwc_counter[inv[i]]+=1
-                        start_index = i
-                        n+=1
-                        break
-    #print 'count_matches complete'
-    return liwc_counter,n,word_count,responses
+    return liwc_counter,n,word_count
 
 def category_counts(liwc_dict,liwc_counts):
 
@@ -73,9 +70,8 @@ def category_counts(liwc_dict,liwc_counts):
             for item in liwc_dict[k]:
                 my_dict[item]+= (1 * mult)
 
-    for k in my_dict.keys():
-        if my_dict[k] == 0:
-            del my_dict[k]
+
+
     return my_dict
 
 
