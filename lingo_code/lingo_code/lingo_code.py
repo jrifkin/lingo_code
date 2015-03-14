@@ -48,10 +48,12 @@ def sentiment_score(data,sent_file,response_dict,name = 'File1',threshold = 0):
     """goal of this function is to create a varaible for positivity returned in the response_dict"""
   
     sentiments = {}
-    
+
     for i,response in enumerate(data):
         sentiment = 0       
+        word_count = 0
         for word in response:
+            word_count+=1
             if sent_file.has_key(word.lower()):
                 sentiment+=float(sent_file[word.lower()])
         sentiments[i] = [sentiment,response]
@@ -59,6 +61,7 @@ def sentiment_score(data,sent_file,response_dict,name = 'File1',threshold = 0):
         #add to score as first var in response_dict
         tmp_lst = response_dict[i]
         tmp_lst.append(sentiment)
+        tmp_lst.append(word_count)
         response_dict[i] = tmp_lst
         
 
@@ -87,34 +90,36 @@ def main():
     """pass it a directory and it will loop through all .txt. files and run the sntiment_score and common_word_analysis methods"""    
     
     rootdir,b_val = ls.validate_dir(sys.argv)
-
+    
     if not(b_val):
         return
+
+    liwc_dict = ls.load_liwc_cats()
+    sent_file = ls.load_LabMT()
 
     for subdir,dirs,files in os.walk(rootdir):
         for file in files:
             if file[file.find('.'):] == '.txt':
                 txt_file = os.path.join(rootdir,file)
                 
-                responses,header = run_analysis(txt_file)
+                responses,header = run_analysis(txt_file,liwc_dict,sent_file)
 
                 ls.make_data(txt_file,responses,header,rootdir)
 
 
-def run_analysis(txt_file):
+def run_analysis(txt_file,liwc_dict,sent_file):
     
     #need to make a header entry for this one
     response_dict = ls.setup_responses(txt_file)
 
     data = ls.split_response(txt_file)
-    liwc_dict = ls.load_liwc_cats()
-    sent_file = ls.load_LabMT()
     
     temp = sentiment_score(data,sent_file,response_dict,txt_file)
     final,header = liwc_analysis(data,liwc_dict,temp,txt_file)
 
     header.insert(0,'response_id')
     header.insert(1,'sentiment_score')
+    header.insert(2,'word_count')
     return final,header
 
 
