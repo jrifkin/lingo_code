@@ -174,7 +174,7 @@ def validate_dir(args):
         rootdir = args[1]
     except:
         print 'Please specify a valid directory that contains at least 1 .txt file'
-        return -1,bValid
+        return -1,bValid,0
     
 
     total_files = len(glob.glob1(rootdir,"*.txt"))
