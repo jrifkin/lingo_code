@@ -30,8 +30,9 @@ def liwc_analysis(data,liwc_dict,response_dict,name='File1'):
             tmp_lst = response_dict[i]
             tmp_lst.append(liwc_score(key,overall_cats,base))
             response_dict[i] = tmp_lst
-            
-    return response_dict
+    
+    headers = overall_cats.keys()
+    return response_dict,headers
     
     ls.print_liwc_results(txt_file,total_base,total_word_count,len(data))
 
@@ -82,8 +83,6 @@ def sentiment_score(data,sent_file,response_dict,name = 'File1',threshold = 0):
     return response_dict
 
 
-
-
 def main():
     """pass it a directory and it will loop through all .txt. files and run the sntiment_score and common_word_analysis methods"""    
     
@@ -97,13 +96,14 @@ def main():
             if file[file.find('.'):] == '.txt':
                 txt_file = os.path.join(rootdir,file)
                 
-                responses = run_analysis(txt_file)
+                responses,header = run_analysis(txt_file)
 
-                ls.make_data(txt_file,responses,rootdir)
+                ls.make_data(txt_file,responses,header,rootdir)
 
 
 def run_analysis(txt_file):
     
+    #need to make a header entry for this one
     response_dict = ls.setup_responses(txt_file)
 
     data = ls.split_response(txt_file)
@@ -111,7 +111,11 @@ def run_analysis(txt_file):
     sent_file = ls.load_LabMT()
     
     temp = sentiment_score(data,sent_file,response_dict,txt_file)
-    final = liwc_analysis(data,liwc_dict,temp,txt_file)
+    final,header = liwc_analysis(data,liwc_dict,temp,txt_file)
+
+    header.insert(0,'response_id')
+    header.insert(1,'sentiment_score')
+    return final,header
 
 
 

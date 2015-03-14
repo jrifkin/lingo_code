@@ -186,6 +186,17 @@ def setup_responses(txt_file,id_col=-1):
     txt_file.close()
     return my_dict
 
-def make_data(name,response_dict,wd):
-    #goal to output CSV in original directory
-    short_name = name[findnth(txt_file,'\\',txt_file.count('\\'))-2:txt_file.find('.')]
+def make_data(name,response_dict,header,wd):
+    import csv,os
+    
+    csv_name = name[findnth(name,'\\',name.count('\\'))-4:name.find('.')] + '_liwc_corr_.csv'
+    
+    with open(csv_name,'wb') as fp:
+        a = csv.writer(fp,delimiter=',')
+        a.writerow(header)
+        for response in response_dict.keys():
+            print response_dict[response]
+            a.writerow(response_dict[response])
+
+
+
