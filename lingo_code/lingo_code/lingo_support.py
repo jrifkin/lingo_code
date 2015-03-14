@@ -70,8 +70,6 @@ def category_counts(liwc_dict,liwc_counts):
             for item in liwc_dict[k]:
                 my_dict[item]+= (1 * mult)
 
-
-
     return my_dict
 
 
@@ -187,3 +185,7 @@ def setup_responses(txt_file,id_col=-1):
     my_dict = {i:[i] for i,line in enumerate(txt_file)}
     txt_file.close()
     return my_dict
+
+def make_data(name,response_dict,wd):
+    #goal to output CSV in original directory
+    short_name = name[findnth(txt_file,'\\',txt_file.count('\\'))-2:txt_file.find('.')]

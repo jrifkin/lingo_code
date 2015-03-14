@@ -97,7 +97,9 @@ def main():
             if file[file.find('.'):] == '.txt':
                 txt_file = os.path.join(rootdir,file)
                 
-                run_analysis(txt_file)
+                responses = run_analysis(txt_file)
+
+                ls.make_data(txt_file,responses,rootdir)
 
 
 def run_analysis(txt_file):
@@ -111,8 +113,6 @@ def run_analysis(txt_file):
     temp = sentiment_score(data,sent_file,response_dict,txt_file)
     final = liwc_analysis(data,liwc_dict,temp,txt_file)
 
-    #output final dictionary as CSV
-    ls.make_data(final)
 
 
 if __name__ == '__main__':
