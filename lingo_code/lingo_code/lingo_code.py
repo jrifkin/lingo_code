@@ -39,7 +39,7 @@ def liwc_analysis(data,liwc_dict,response_dict,name='File1'):
 
 def liwc_score(cat,overall_cats,base):
     if base == 0:
-        return None
+        return 0
     else:
         return float(overall_cats[cat])/base
 
@@ -105,6 +105,8 @@ def main():
                 responses,header = run_analysis(txt_file,liwc_dict,sent_file)
 
                 ls.make_data(txt_file,responses,header,rootdir)
+
+                ls.correlation_analysis(txt_file,responses,header)
 
 
 def run_analysis(txt_file,liwc_dict,sent_file):

@@ -199,4 +199,26 @@ def make_data(name,response_dict,header,wd):
             a.writerow(response_dict[response])
 
 
+def make_matrix(response_dict):
+    return_lst = []
+    for key in response_dict.keys():
+        return_lst.append(response_dict[key])
+
+    return return_lst
+
+def correlation_analysis(name,response_dict,header):
+    from numpy import corrcoef, sum, log, arange
+    from pylab import pcolor, show, colorbar, xticks, yticks
+
+    data = make_matrix(response_dict)
+    
+    R = corrcoef(data)
+
+    pcolor(R)
+    colorbar()
+    yticks(arange(header[0],header[len(header)]),range(0,25))
+    xticks(arange(header[0],header[len(header)]),range(0,25))
+    show()
+
+
 
