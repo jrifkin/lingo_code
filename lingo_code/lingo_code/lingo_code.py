@@ -3,27 +3,25 @@
 import sys,os,re
 import lingo_support as ls
 
-"""goal is to create binary variables with which we can run correlation analysis on"""
+"""Script that consumes a directory containing text files and returns 1) a CSV file per text file containing the LabMT sentiment score 
+and LIWC category scores per line in file and 2) a heatmap of correlations between LabMT sentiment and LIWC categories per txt file analyzed"""
 
 def liwc_analysis(data,liwc_dict,response_dict,name='File1'):
+    """method for running LIWC analysis on each line in txt file. Returns response_dict with appended LIWC category scores per line in txt file"""
 
     total_word_count = 0
     total_base = 0
 
-    #liwc_counter = placeholder for how many times a word was mentioned
     liwc_counter = {k:0 for k in liwc_dict.keys()}
     
-    #make list of liwc_words and sort alphabetically
     liwc_words = liwc_dict.keys()
     liwc_words.sort(key=lambda x: re.sub('[^A-Za-z]+', '', x).lower())
 
-    #needs to happen on a response level instead of aggregate
     for i,response in enumerate(data):
-        counts,base,word_count = ls.count_matches(response,liwc_words,liwc_counter)   
+        counts,base,word_count = ls.count_matches(response,liwc_words,liwc_counter)
         total_word_count+=word_count
         total_base+=base 
 
-        #overall_cats holds the count of words per category
         overall_cats = ls.category_counts(liwc_dict,counts)
 
         for key in overall_cats.keys():
@@ -31,21 +29,24 @@ def liwc_analysis(data,liwc_dict,response_dict,name='File1'):
             tmp_lst.append(liwc_score(key,overall_cats,base))
             response_dict[i] = tmp_lst
     
+        liwc_counter = dict.fromkeys(liwc_dict,0)
     headers = overall_cats.keys()
+
     return response_dict,headers
     
-    ls.print_liwc_results(txt_file,total_base,total_word_count,len(data))
+    #ls.print_liwc_results(txt_file,total_base,total_word_count,len(data))
 
 
 def liwc_score(cat,overall_cats,base):
+    """simplistic calculation of LIWC category score"""
     if base == 0:
-        return 0
+        return 0.0
     else:
         return float(overall_cats[cat])/base
 
 
 def sentiment_score(data,sent_file,response_dict,name = 'File1',threshold = 0):
-    """goal of this function is to create a varaible for positivity returned in the response_dict"""
+    """calculates sentiment score per line in txt file and appends scores to response_dict"""
   
     sentiments = {}
 
@@ -81,15 +82,15 @@ def sentiment_score(data,sent_file,response_dict,name = 'File1',threshold = 0):
     pos_ratio = pos/float(len(sentiments.keys()))
     neg_ratio = neg/float(len(sentiments.keys()))
 
-    ls.print_sent_analysis(name,overall,sentiments,pos_ratio,neg_ratio)
+    #ls.print_sent_analysis(name,overall,sentiments,pos_ratio,neg_ratio)
 
     return response_dict
 
 
 def main():
-    """pass it a directory and it will loop through all .txt. files and run the sntiment_score and common_word_analysis methods"""    
+    """main control method that quarterbacks the analyses and outputs per text file"""
     
-    rootdir,b_val = ls.validate_dir(sys.argv)
+    rootdir,b_val,total_files = ls.validate_dir(sys.argv)
     
     if not(b_val):
         return
@@ -97,11 +98,13 @@ def main():
     liwc_dict = ls.load_liwc_cats()
     sent_file = ls.load_LabMT()
 
+    counter = 0
     for subdir,dirs,files in os.walk(rootdir):
         for file in files:
             if file[file.find('.'):] == '.txt':
+                counter+=1
                 txt_file = os.path.join(rootdir,file)
-                
+                print 'Analyzing file %s of %s. File name = %s'%(counter,total_files,txt_file[ls.findnth(txt_file,'\\',txt_file.count('\\'))-4:])
                 responses,header = run_analysis(txt_file,liwc_dict,sent_file)
 
                 ls.make_data(txt_file,responses,header,rootdir)
@@ -110,8 +113,8 @@ def main():
 
 
 def run_analysis(txt_file,liwc_dict,sent_file):
+    """method to run sentiment and LIWC analyses"""
     
-    #need to make a header entry for this one
     response_dict = ls.setup_responses(txt_file)
 
     data = ls.split_response(txt_file)
@@ -123,8 +126,6 @@ def run_analysis(txt_file,liwc_dict,sent_file):
     header.insert(1,'sentiment_score')
     header.insert(2,'word_count')
     return final,header
-
-
 
 if __name__ == '__main__':
     import datetime as dt

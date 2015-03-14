@@ -12,6 +12,7 @@ def clean_word(word):
 
 
 def unpack_dictionary(dict):
+    """optional printing methods for sentiment analysis to return top and bottom verbatim lines in txt file"""
     my_ls = []
     for key in dict.keys():
         my_ls.append(dict[key])
@@ -40,6 +41,8 @@ def findnth(haystack, needle, n):
 	return haystack.replace(needle,'XX',n-1).find(needle)
 
 def count_matches(response,inv,liwc_counter):
+    """drives LIWC analysis, returns dictionary of words found in a response, numbers of words in LIWC dictionary per response (serves as base),
+    and total count of wrods per response"""
     n=0
     word_count = 0
    
@@ -61,7 +64,7 @@ def count_matches(response,inv,liwc_counter):
     return liwc_counter,n,word_count
 
 def category_counts(liwc_dict,liwc_counts):
-
+    """creates category count dictionary object enabling tallying of words for LIWC analysis"""
     my_dict = create_cat_dict(liwc_dict)
 
     for k in liwc_counts.keys():
@@ -74,6 +77,7 @@ def category_counts(liwc_dict,liwc_counts):
 
 
 def create_cat_dict(container):
+    """suppot function for creating category count placeholder"""
     dict={}
     for k,v in container.items():
         for item in v:
@@ -82,6 +86,7 @@ def create_cat_dict(container):
 
 
 def split_response(txt_file):
+    """standard method of splitting text file into iteratable data conatined within list"""
     txt_file = open(txt_file,'r')
     data = []
     for line in txt_file:
@@ -94,11 +99,12 @@ def split_response(txt_file):
                 nu_word = word
             words[i] = clean_word(nu_word)
         data.append(words)
-    print 'split responses'
+    
     return data
 
 
 def load_LabMT():
+    """downloads LabMT document from journal attachment, converts to python dictionary"""
     import pandas as pd
 
     url = 'http://www.plosone.org/article/fetchSingleRepresentation.action?uri=info:doi/10.1371/journal.pone.0026752.s001'
@@ -113,7 +119,7 @@ def load_LabMT():
 
 
 def load_liwc_cats():
-    """ *** may have trouble with odd characters such as accent e, for now encoded in unicode and translate to py string"""
+    """consumes enlgish LIWC category dictionary and creates python object"""
     import xlrd as xl
     #xlrd is 0 based in terms of cell referencing
     bPosEmo = False
@@ -138,6 +144,7 @@ def load_liwc_cats():
 
 
 def print_liwc_results(tst_file,base,word_count,num_responses):
+    """optional aggregate analysis on LIWC category scores"""
     print '/n',txt_file.name[findnth(txt_file,'\\',txt_file.count('\\'))-3:txt_file.find('.')].upper(),'/n'
     print 'Base = %s'%(base)
     print 'Total word count = %s'%(word_count)
@@ -147,6 +154,7 @@ def print_liwc_results(tst_file,base,word_count,num_responses):
 
 
 def print_sent_analysis(txt_file,overall,sentiments,pos_ratio,neg_ratio):
+    """optional aggregate analysis on LabMT sentiment"""
     print "~~@@~~~@@@~~ %s SENTIMENT ANALYSIS RESULTS ~~@@~~~@@@~~\n"%(txt_file[findnth(txt_file,'\\',txt_file.count('\\'))-3:txt_file.find('.')].upper())
     print "Overall sentiment score: %s"%(str(overall))
     print "Total number of responses: %s\n"%(len(sentiments.keys()))
@@ -158,66 +166,76 @@ def print_sent_analysis(txt_file,overall,sentiments,pos_ratio,neg_ratio):
 
 
 def validate_dir(args):
+    """validates directory passed via argument contains text files"""
     import os
+    import glob
     bValid = False
     try:
         rootdir = args[1]
     except:
         print 'Please specify a valid directory that contains at least 1 .txt file'
         return -1,bValid
-        
-    for filename in os.listdir(rootdir):
-        if '.txt' in filename:
-            bValid = True
-            break
+    
+
+    total_files = len(glob.glob1(rootdir,"*.txt"))
+    if total_files>0:
+        bValid = True
     else:
         print 'No .txt files in the specified directory'
-
-    return rootdir,bValid   
+        
+    return rootdir,bValid,total_files
 
 def setup_responses(txt_file,id_col=-1):
+    """creates blank storage container for response level data per txt file analyzed"""
     txt_file = open(txt_file,'r')
     my_dict = {}
-    if id_col == -1:
-        #assumes there are no ids and will create, in the future, will have to acommodate pre-existing ids
-        print 'placeholder'
     
     my_dict = {i:[i] for i,line in enumerate(txt_file)}
     txt_file.close()
     return my_dict
 
 def make_data(name,response_dict,header,wd):
+    """creates CSV outputs of text scores for analysis in other programs"""
     import csv,os
     
-    csv_name = name[findnth(name,'\\',name.count('\\'))-4:name.find('.')] + '_liwc_corr_.csv'
+    csv_name = name[findnth(name,'\\',name.count('\\'))-4:name.find('.')] + '_liwc_corr.csv'
     
     with open(csv_name,'wb') as fp:
         a = csv.writer(fp,delimiter=',')
         a.writerow(header)
         for response in response_dict.keys():
-            print response_dict[response]
             a.writerow(response_dict[response])
 
 
-def make_matrix(response_dict):
+def make_matrix(response_dict,headers,min_base=10):
+    """creates data frame of text to split sentiment scores from LIWC category scores"""
+    import pandas as pd
     return_lst = []
-    for key in response_dict.keys():
-        return_lst.append(response_dict[key])
+    
+    data = pd.DataFrame.from_dict(response_dict,orient='index')
+    data.columns = headers
 
-    return return_lst
+    sentiment_scores = [i for i in data.sentiment_score]
+
+    for col in data.columns:
+        return_lst.append([i for i in data[col].values])
+  
+    return sentiment_scores,return_lst
 
 def correlation_analysis(name,response_dict,header):
-    from numpy import corrcoef, sum, log, arange
+    """takes in text scores and produces heatmap of correlation between a LIWC category and the corresponding LabMT sentiment scores"""
+    from numpy import corrcoef, arange
     from pylab import pcolor, show, colorbar, xticks, yticks
-
-    data = make_matrix(response_dict)
     
-    R = corrcoef(data)
+    sentiment_scores,liwc_cats = make_matrix(response_dict,header)
+    
+    #compare sentiment_scores v all liwc_cats
+    R = corrcoef(sentiment_scores,liwc_cats[13:24])
 
     pcolor(R)
     colorbar()
-    yticks(arange(header[0],header[len(header)]),range(0,25))
-    xticks(arange(header[0],header[len(header)]),range(0,25))
+    yticks(arange(0.5,13.5),header[13:24])
+    xticks(arange(0.5,13.5),header[13:24])
     show()
 
 
